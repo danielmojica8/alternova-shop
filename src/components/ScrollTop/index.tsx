@@ -1,5 +1,5 @@
 import { Box, Fade, useScrollTrigger } from '@mui/material';
-import { PropsApp } from '../../interface';
+import { PropsApp } from '../../models';
 
 export function ScrollTop(props: PropsApp) {
 	const { children, window } = props;

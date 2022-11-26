@@ -1,31 +1,81 @@
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Product } from '../../services/interface';
+import useCartStore from '../../stores/CartStore';
+import useProductsStore from '../../stores/ProductsStore';
+import { Box, Paper, Rating, Snackbar } from '@mui/material';
+import { BoxContainer, ButtonStyled, ContainerImage } from './styled';
+import { useState } from 'react';
+import { QuantityDesired } from '../QuantityDesired';
 
 export function CardProduct(props: Product) {
-	const { name, stock, type, unit_price } = props;
+	const { name, stock, type, unit_price, id } = props;
+
+	const [open, setOpen] = useState(false);
+	const [quantity, setQuantity] = useState(0);
+
+	const { addProducts } = useCartStore();
+	const { decreaseStock } = useProductsStore();
+
+	const handleAddProduct = () => {
+		const product = { name, stock, type, unit_price, id, quantity };
+		if (stock === 0) {
+			setOpen(true);
+			return;
+		}
+
+		addProducts(product);
+		decreaseStock(product.id, quantity);
+		setQuantity(0);
+	};
 
 	return (
-		<Card>
-			<CardMedia
-				component="img"
-				height="300"
-				image="https://itechcolombia.co/wp-content/uploads/2022/05/iphone-13-pro-max-green-select.png"
-				alt={name}
+		<Paper>
+			<BoxContainer>
+				<ContainerImage>
+					<img
+						alt={name}
+						height={160}
+						src="https://cdn.shopify.com/s/files/1/0573/2309/4216/products/LosAngeles_SandGold_001.png?v=1650876856"
+					/>
+				</ContainerImage>
+				<Box textAlign="center" marginTop="2rem">
+					<Typography fontWeight="bold" variant="body1">
+						{name}
+					</Typography>
+					<Typography variant="caption">Category: {type}</Typography>
+				</Box>
+				<Box>
+					<Typography variant="caption">Stock: {stock}</Typography>
+				</Box>
+				<Box textAlign="center">
+					<Rating name="read-only" size="small" value={3} readOnly />
+					<Typography variant="body1">${unit_price}</Typography>
+				</Box>
+				<Box>
+					<QuantityDesired
+						stock={stock}
+						setOpen={setOpen}
+						quantity={quantity}
+						setQuantity={setQuantity}
+					/>
+				</Box>
+				<ButtonStyled
+					fullWidth
+					variant="contained"
+					color="secondary"
+					onClick={handleAddProduct}
+					disabled={stock === 0 || quantity === 0}
+				>
+					Add to Cart
+				</ButtonStyled>
+			</BoxContainer>
+			<Snackbar
+				open={open}
+				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+				autoHideDuration={6000}
+				onClose={() => setOpen(false)}
+				message="Not enough products in stock"
 			/>
-			<CardContent sx={{ textAlign: 'center' }}>
-				<Typography gutterBottom variant="body1" component="div">
-					{name}
-				</Typography>
-			</CardContent>
-			<CardActions sx={{ justifyContent: 'center' }}>
-				<Button size="small">{stock}</Button>
-				<Button size="small">Add to Cart</Button>
-			</CardActions>
-		</Card>
+		</Paper>
 	);
 }

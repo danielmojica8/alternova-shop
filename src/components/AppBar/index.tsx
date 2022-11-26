@@ -1,26 +1,23 @@
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import useCartStore from '../../stores/CartStore';
 import { ButtonCart } from '../ButtonCart';
-import { ButtonMenu } from '../ButtonMenu';
 import { SearchProducts } from '../Search';
+import { ContainerLogo } from './styled';
 
 export function AppBarHeader() {
+	const { productsInCart } = useCartStore();
+
 	return (
 		<Box sx={{ flexGrow: 1 }}>
-			<AppBar position="static">
-				<Toolbar sx={{ maxWidth: '1600px' }}>
-					<ButtonMenu />
-					<Typography
-						variant="h6"
-						component="div"
-						sx={{ flexGrow: 1, display: { xs: 'none', sm: 'initial' } }}
-					>
-						Alternova Shop
-					</Typography>
+			<AppBar position="fixed" elevation={3} color="inherit">
+				<Toolbar>
+					<ContainerLogo flexGrow={1}>
+						<img src="public/alternova.png" height={20} />
+					</ContainerLogo>
 					<SearchProducts />
-					<ButtonCart />
+					{productsInCart.length > 0 && <ButtonCart />}
 				</Toolbar>
 			</AppBar>
 		</Box>

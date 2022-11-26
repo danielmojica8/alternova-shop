@@ -1,48 +1,36 @@
-import { useState } from 'react';
 import Drawer from '@mui/material/Drawer';
-import { Box, Grid, Paper, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
+import { Product } from '../../services/interface';
+import { CardDrawerProduct } from '../CardDrawerProduct';
+import { useDrawerCart } from './hook';
+import { ButtonCreateOrder } from './styled';
 
 export function DrawerCart() {
-	const [open, setOpen] = useState(true);
+	const { productsInCart, handleOpen, open, total, generateJson } =
+		useDrawerCart();
 
 	return (
-		<Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
-			<Stack spacing={2} padding={2}>
-				<Typography>Shopping Cart</Typography>
-				{[1, 2, 3, 4, 5].map((item) => (
-					<Paper elevation={1}>
-						<Grid container columnSpacing={2} alignItems="center">
-							<Grid item xs={1}>
-								<Box width={300}>
-									<img
-										src="https://itechcolombia.co/wp-content/uploads/2022/05/iphone-13-pro-max-green-select.png"
-										height="50"
-									/>
-								</Box>
-							</Grid>
-							<Grid item xs={4}>
-								<Typography variant="body1" component="span">
-									Iphone 13 Pro max pro
-								</Typography>
-							</Grid>
-							<Grid item xs={1}>
-								<Typography variant="body1" component="span">
-									2
-								</Typography>
-							</Grid>
-							<Grid item xs={2}>
-								<Typography variant="body1" component="span">
-									$5000
-								</Typography>
-							</Grid>
-							<Grid item xs={3}>
-								<Typography variant="body1" component="span">
-									$10000
-								</Typography>
-							</Grid>
-						</Grid>
-					</Paper>
+		<Drawer anchor="right" open={open} onClose={handleOpen}>
+			<Stack spacing={2} padding={2} width={{ xs: '310px', md: '400px' }}>
+				<Typography variant="h6" fontWeight="bold">
+					Shopping Cart
+				</Typography>
+				{productsInCart.map((product: Product) => (
+					<CardDrawerProduct key={product.id} {...product} />
 				))}
+
+				<ButtonCreateOrder
+					justifyContent="space-between"
+					direction="row"
+					onClick={() => generateJson()}
+				>
+					<Typography fontWeight="bold" variant="body1">
+						Create order
+					</Typography>
+					<Typography fontWeight="bold" variant="body1">
+						Total: ${total}
+					</Typography>
+				</ButtonCreateOrder>
 			</Stack>
 		</Drawer>
 	);
